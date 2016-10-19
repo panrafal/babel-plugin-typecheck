@@ -76,6 +76,8 @@ export default function ({types: t, template}): Object {
   const checkNotNull: (() => Node) = expression(`input != null`);
   const checkEquals: (() => Node) = expression(`input === expected`);
 
+  const error = `console.error(message)` // `throw new TypeError(message)`
+
   const declareTypeChecker: (() => Node) = template(`
     const id = (function () {
       function id (input) {
@@ -92,7 +94,7 @@ export default function ({types: t, template}): Object {
 
   const guard: (() => Node) = template(`
     if (!check) {
-      throw new TypeError(message);
+      ${error};
     }
   `);
 
@@ -101,14 +103,14 @@ export default function ({types: t, template}): Object {
       ret;
     }
     else {
-      throw new TypeError(message);
+      ${error};
     }
   `);
 
   const guardInline: (() => Node) = expression(`
     (id => {
       if (!check) {
-        throw new TypeError(message);
+        ${error};
       }
       return id;
     })(input)
@@ -117,7 +119,7 @@ export default function ({types: t, template}): Object {
   const guardFn: (() => Node) = expression(`
     function name (id) {
       if (!check) {
-        throw new TypeError(message);
+        ${error};
       }
       return id;
     }

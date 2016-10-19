@@ -1000,7 +1000,7 @@ export default function ({types: t, template}): Object {
       null: expression(`input === null`),
       void: expression(`input == null`),
       instanceof: expression(`input instanceof type`),
-      type: expression(`type(input)`),
+      type: expression(`(input instanceof type || type(input))`),
       mixed: () => null,
       any: () => null,
       union: checkUnion,

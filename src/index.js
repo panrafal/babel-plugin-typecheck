@@ -63,6 +63,15 @@ export default function ({types: t, template}): Object {
     'instanceof'
   ];
 
+  const ignoreAnnotationNames = [
+    'SyntheticEvent',
+    'SyntheticClipboardEvent', 'SyntheticCompositionEvent', 'SyntheticInputEvent',
+    'SyntheticUIEvent', 'SyntheticFocusEvent', 'SyntheticKeyboardEvent', 'SyntheticMouseEvent',
+    'SyntheticDragEvent', 'SyntheticWheelEvent', 'SyntheticTouchEvent',
+    'React$Element', 'React$Component', 'React$PureComponent', 'ReactClass',
+    'window'
+  ];
+
   const checks: Object = createChecks();
   const staticChecks: Object = createStaticChecks();
 
@@ -1022,8 +1031,8 @@ export default function ({types: t, template}): Object {
       uint32: expression(`typeof input === 'number' && !isNaN(input) && input >= 0 && input <= 4294967295 && input === Math.floor(input)`),
       float32: expression(`typeof input === 'number' && !isNaN(input) && input >= -3.40282347e+38 && input <= 3.40282347e+38`),
       float64: expression(`typeof input === 'number' && !isNaN(input)`),
-      double: expression(`typeof input === 'number' && !isNaN(input)`)
-
+      double: expression(`typeof input === 'number' && !isNaN(input)`),
+      ignore: expression(`(true || type)`)
 
     };
   }
@@ -1711,7 +1720,15 @@ export default function ({types: t, template}): Object {
     return declaration;
   }
 
+  function shouldCheckAnnotation(annotation: TypeAnnotation): boolean {
+    const name = annotation.id && annotation.id.name;
+    return !name || ignoreAnnotationNames.indexOf(name) < 0;
+  }
+
   function checkAnnotation (input: Node, annotation: TypeAnnotation, scope: Scope): ?Node {
+    if (!shouldCheckAnnotation(annotation)) {
+      return checks.ignore({type: annotation.id});
+    }
     switch (annotation.type) {
       case 'TypeAnnotation':
       case 'FunctionTypeParam':

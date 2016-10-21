@@ -1722,7 +1722,10 @@ export default function ({types: t, template}): Object {
 
   function shouldCheckAnnotation(annotation: TypeAnnotation): boolean {
     const name = annotation.id && annotation.id.name;
-    return !name || ignoreAnnotationNames.indexOf(name) < 0;
+    if (!name) return true
+    // ignore all types with $, like $Shape React$Something, etc.
+    if (name.indexOf('$') >= 0) return false
+    return ignoreAnnotationNames.indexOf(name) < 0;
   }
 
   function checkAnnotation (input: Node, annotation: TypeAnnotation, scope: Scope): ?Node {

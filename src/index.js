@@ -1009,7 +1009,8 @@ export default function ({types: t, template}): Object {
       null: expression(`input === null`),
       void: expression(`input == null`),
       instanceof: expression(`input instanceof type`),
-      type: expression(`(input instanceof type || type(input))`),
+      // we need to ignore types, that are understandable only to flow
+      type: expression(`(typeof(type) !== 'function' || input instanceof type || type(input))`),
       mixed: () => null,
       any: () => null,
       union: checkUnion,

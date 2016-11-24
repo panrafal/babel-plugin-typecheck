@@ -1134,8 +1134,8 @@ export default function ({types: t, template}): Object {
         return compareTupleAnnotation(a, b);
       case 'UnionTypeAnnotation':
         return compareUnionAnnotation(a, b);
-      case 'IntersectionTypeAnnotation':
-        return compareIntersectionAnnotation(a, b);
+     case 'IntersectionTypeAnnotation':
+       return null;
       case 'NullableTypeAnnotation':
         return compareNullableAnnotation(a, b);
       default:

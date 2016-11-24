@@ -85,7 +85,7 @@ export default function ({types: t, template}): Object {
   const checkNotNull: (() => Node) = expression(`input != null`);
   const checkEquals: (() => Node) = expression(`input === expected`);
 
-  const error = `console.error(message)` // `throw new TypeError(message)`
+  const error = `console.error(message, input)` // `throw new TypeError(message)`
 
   const declareTypeChecker: (() => Node) = template(`
     const id = (function () {
@@ -491,6 +491,7 @@ export default function ({types: t, template}): Object {
         if (check) {
           collected.push(guard({
             check,
+            input: id,
             message: varTypeErrorMessage(id, context)
           }));
         }
@@ -588,6 +589,7 @@ export default function ({types: t, template}): Object {
         const parent = path.getStatementParent();
         parent.insertAfter(guard({
           check,
+          input: id,
           message: varTypeErrorMessage(id, context)
         }));
       }
@@ -641,6 +643,7 @@ export default function ({types: t, template}): Object {
       }
       path.insertBefore(guard({
         check: checks.iterable({input: id}),
+        input: id,
         message: t.binaryExpression(
           '+',
           t.stringLiteral(`Expected ${humanReadableType(right.node)} to be iterable, got `),
@@ -901,6 +904,7 @@ export default function ({types: t, template}): Object {
         id,
         name,
         check,
+        input: id,
         message: returnTypeErrorMessage(path, path.node, id, context)
       });
       node.returnGuard.hasBeenTypeChecked = true;
@@ -937,6 +941,7 @@ export default function ({types: t, template}): Object {
           id,
           name,
           check,
+          input: id,
           message: yieldTypeErrorMessage(node, yieldType, id, context)
         });
         node.yieldGuardName = name;
@@ -954,6 +959,7 @@ export default function ({types: t, template}): Object {
           id,
           name,
           check,
+          input: id,
           message: yieldNextTypeErrorMessage(node, nextType, id, context)
         });
         node.nextGuardName = name;
@@ -3029,6 +3035,7 @@ export default function ({types: t, template}): Object {
     const message = paramTypeErrorMessage(checkable, context, node.typeAnnotation);
     return guard({
       check,
+      input: checkable,
       message
     });
   }
@@ -3077,6 +3084,7 @@ export default function ({types: t, template}): Object {
     const message = paramTypeErrorMessage(id, context, node.typeAnnotation);
     return guard({
       check,
+      input: id,
       message
     });
   }

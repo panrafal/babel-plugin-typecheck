@@ -175,6 +175,7 @@ export default function ({types: t, template}): Object {
   const propType: (() => Node) = expression(`
     (function(props, name, component) {
       var prop = props[name];
+      if (prop === undefined) return;
       if(!check) {
         return new Error(
           "Invalid prop \`" + name + "\` supplied to \`" + component
